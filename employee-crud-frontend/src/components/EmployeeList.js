@@ -5,6 +5,7 @@ import EmployeeForm from "./EmployeeForm";
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchEmployees = async () => {
     try {
@@ -26,15 +27,37 @@ const EmployeeList = () => {
     fetchEmployees();
   }, []);
 
+  // Filter employees based on search term
+  const filteredEmployees = employees.filter((emp) =>
+    emp.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
       <h2>Employee List</h2>
+
       <EmployeeForm
         fetchEmployees={fetchEmployees}
         editingEmployee={editingEmployee}
         setEditingEmployee={setEditingEmployee}
       />
-      <table border="1" style={{ marginTop: "20px", width: "100%" }}>
+
+      {/* Search input */}
+      <input
+        type="text"
+        placeholder="Search by name..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{
+          marginBottom: "15px",
+          padding: "8px",
+          width: "100%",
+          borderRadius: "6px",
+          border: "1px solid #ccc",
+        }}
+      />
+
+      <table border="1" style={{ marginTop: "10px", width: "100%" }}>
         <thead>
           <tr>
             <th>ID</th>
@@ -45,7 +68,7 @@ const EmployeeList = () => {
           </tr>
         </thead>
         <tbody>
-          {employees.map((emp) => (
+          {filteredEmployees.map((emp) => (
             <tr key={emp.id}>
               <td>{emp.id}</td>
               <td>{emp.name}</td>
@@ -57,6 +80,13 @@ const EmployeeList = () => {
               </td>
             </tr>
           ))}
+          {filteredEmployees.length === 0 && (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center" }}>
+                No employees found.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
